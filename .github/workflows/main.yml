@@ -1,4 +1,4 @@
-            - name: Check vulnerable NuGet packages
+            
   # You may pin to the exact commit or the version.
   # uses: elmahio/github-check-vulnerable-nuget-packages-action@29003e92dc014c9b90f78a6f3ee7e8811f9ded0f
   uses: elmahio/github-check-vulnerable-nuget-packages-action@v1
