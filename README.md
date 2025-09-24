@@ -1,10 +1,14 @@
+
+# Digital Garden
+
+An art project using an ESP32 and a bunch of LEDs.
+
+## Android controller
+
+A companion Android app built with MIT App Inventor is available under [`app_inventor/`](app_inventor/). Run `python scripts/generate_appinventor_project.py` to produce `app_inventor/DigitalGardenController/DigitalGardenController.aia`, then import it into MIT App Inventor (or install the generated APK) to control the lamp over Bluetooth. The app exposes manual color toggles, effect mode buttons, and the same tunable sliders as the built-in web interface.
+
 An art project using a ESP32 and a bunnch of LEDs 
- (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a//dev/null b/app_inventor/README.md
-index 0000000000000000000000000000000000000000..ccedb8d6d5eadd070140330364f8ab9f67228122 100644
---- a//dev/null
-+++ b/app_inventor/README.md
-@@ -0,0 +1,38 @@
+
 +# Digital Garden Android Controller (MIT App Inventor)
 +
 +This directory contains an MIT App Inventor project that exposes the same commands handled by the `DigitalGarden.ino` firmware.
@@ -46,3 +50,4 @@ index 0000000000000000000000000000000000000000..ccedb8d6d5eadd070140330364f8ab9f
  
 EOF
 )
+
