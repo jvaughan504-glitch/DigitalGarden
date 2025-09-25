@@ -604,7 +604,8 @@ def main():
 if __name__ == '__main__':
     main()
 =======
- (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+
+#(cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a//dev/null b/scripts/generate_appinventor_project.py
 index 0000000000000000000000000000000000000000..685eb3266175d6b65cf48ba09922b84a12d89612 100644
 --- a//dev/null
