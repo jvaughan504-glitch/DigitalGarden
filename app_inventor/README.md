@@ -25,6 +25,7 @@ The app automatically appends a newline to each command so it is compatible with
   python scripts/generate_appinventor_project.py
   ```
 
+
   The script refreshes the deterministic project metadata (such as `.nomedia` and `project.properties`) and places a fresh `DigitalGardenController.aia` alongside the sources (the binary is .gitignored so regenerate it whenever needed).
 
 ## Resolving merge conflicts
@@ -37,6 +38,9 @@ python scripts/generate_appinventor_project.py
 ```
 
 Once the script finishes, commit the resolved files and continue with your merge. The helper exits early while conflicts remain so you never accidentally import a broken App Inventor project.
+=======
+  The script rewrites the source files and places a fresh `DigitalGardenController.aia` alongside them (the binary is .gitignored so regenerate it whenever needed).
+
 
 ## Using the app
 
