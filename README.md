@@ -1,6 +1,6 @@
 # Digital Garden
 
-An art project using an ESP32 and a bunch of LEDs.
+An art project using a ESP32 and a bunnch of LEDs.
 
 ## Android controller
 

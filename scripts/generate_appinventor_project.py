@@ -7,6 +7,9 @@ The generated ``DigitalGardenController.aia`` can be imported directly into MIT
 App Inventor.  Running the script repeatedly is safe.
 """
 
+from __future__ import annotations
+
+import subprocess
 from pathlib import Path
 import zipfile
 
@@ -41,6 +44,10 @@ color.accent=&HFFFFC107
 """
 
 
+class ConflictError(RuntimeError):
+    """Raised when Git reports unresolved merge conflicts."""
+
+
 def ensure_required_files() -> None:
     missing = [str(path) for path in REQUIRED_FILES if not path.exists()]
     if missing:
@@ -52,26 +59,43 @@ def ensure_required_files() -> None:
         )
 
 
-def ensure_no_conflicts() -> None:
-    conflict_markers = ("<<<<<<<", "=======", ">>>>>>>")
-    conflicted = []
-    for path in PROJECT_DIR.rglob("*"):
-        if path.is_file() and path != AIA_PATH:
-            try:
-                text = path.read_text(encoding="utf-8")
-            except UnicodeDecodeError:
-                # Skip binary assets. Merge conflicts will show up in the
-                # corresponding text metadata instead.
-                continue
-            if any(marker in text for marker in conflict_markers):
-                conflicted.append(path.relative_to(REPO_ROOT))
+def list_git_conflicts() -> list[Path]:
+    """Return the set of files that Git still considers conflicted."""
 
-    if conflicted:
-        file_list = "\n".join(f"  - {path}" for path in conflicted)
-        raise RuntimeError(
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "-u"],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
+        )
+    except subprocess.CalledProcessError as exc:  # pragma: no cover - defensive
+        raise RuntimeError("Failed to query git for conflicts") from exc
+
+    conflicts = set()
+    for line in result.stdout.splitlines():
+        # The format is: <mode> <hash> <stage>\t<path>
+        try:
+            _metadata, path_str = line.split("\t", 1)
+        except ValueError:  # pragma: no cover - defensive
+            continue
+        conflicts.add(REPO_ROOT / path_str)
+
+    return sorted(conflicts)
+
+
+def ensure_no_conflicts() -> None:
+    conflicts = [path for path in list_git_conflicts() if path != AIA_PATH]
+    if conflicts:
+        file_list = "\n".join(f"  - {path.relative_to(REPO_ROOT)}" for path in conflicts)
+        raise ConflictError(
             "Resolve the Git merge conflicts below before packaging the MIT App Inventor project:\n"
             f"{file_list}\n"
-            "After fixing the conflicts run `python scripts/generate_appinventor_project.py` again."
+            "Open each file, remove the `<<<<<<<`, `=======`, and `>>>>>>>` markers, choose the correct blocks of text, then run:\n"
+            "  git add <each resolved file>\n"
+            "  python scripts/generate_appinventor_project.py\n"
+            "Once the helper succeeds you can commit and continue your merge or rebase."
         )
 
 
