@@ -127,7 +127,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-=======
 
 #!/usr/bin/env python3
 """Generate the MIT App Inventor project files for the Digital Garden controller."""
