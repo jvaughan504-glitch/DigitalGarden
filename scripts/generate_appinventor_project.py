@@ -52,6 +52,29 @@ def ensure_required_files() -> None:
         )
 
 
+def ensure_no_conflicts() -> None:
+    conflict_markers = ("<<<<<<<", "=======", ">>>>>>>")
+    conflicted = []
+    for path in PROJECT_DIR.rglob("*"):
+        if path.is_file() and path != AIA_PATH:
+            try:
+                text = path.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                # Skip binary assets. Merge conflicts will show up in the
+                # corresponding text metadata instead.
+                continue
+            if any(marker in text for marker in conflict_markers):
+                conflicted.append(path.relative_to(REPO_ROOT))
+
+    if conflicted:
+        file_list = "\n".join(f"  - {path}" for path in conflicted)
+        raise RuntimeError(
+            "Resolve the Git merge conflicts below before packaging the MIT App Inventor project:\n"
+            f"{file_list}\n"
+            "After fixing the conflicts run `python scripts/generate_appinventor_project.py` again."
+        )
+
+
 def ensure_assets() -> None:
     ASSETS_DIR.mkdir(parents=True, exist_ok=True)
     (ASSETS_DIR / ".nomedia").write_text("")
@@ -71,6 +94,7 @@ def write_aia() -> None:
 
 def main() -> None:
     ensure_required_files()
+    ensure_no_conflicts()
     ensure_assets()
     ensure_project_properties()
     write_aia()
